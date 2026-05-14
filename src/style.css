@@ -88,6 +88,43 @@ p {
   box-shadow: 0 4px 22px rgba(36, 66, 124, 0.05);
 }
 
+.practice-landing-block {
+  margin-top: 28px;
+  padding: 22px 20px 8px;
+  border: 1px solid #e8d9c4;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #fffdfb 0%, #fff5e8 100%);
+  box-shadow: 0 4px 22px rgba(124, 86, 36, 0.06);
+}
+
+.practice-landing-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a5f2c;
+  margin-bottom: 8px;
+}
+
+.practice-landing-intro {
+  color: #5c4a3a;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+  max-width: 46rem;
+}
+
+.module-grid--practice {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  max-width: 100%;
+}
+
+.module-card.module-card--practice {
+  border-color: #e0c9a8;
+  border-left: 4px solid #c9883a;
+  background: linear-gradient(165deg, #ffffff 0%, #fff8ee 55%, #fff0dc 100%);
+}
+
 .cv-landing-block {
   /* Блок CV на главной скрыт; разметка и модуль не удалены — снова показать: убрать display:none */
   display: none;
@@ -151,6 +188,10 @@ p {
   border-left: 4px solid #1a6b54;
   border-color: #b7d8cc;
   background: linear-gradient(165deg, #ffffff 0%, #f1fffa 60%, #e8f5ef 100%);
+}
+
+.module-card.module-card--practice[data-module-id='practice-interview'] {
+  border-left: 4px solid #c9883a;
 }
 
 .module-card.module-card--cv {
@@ -504,6 +545,130 @@ p {
   padding: 16px 18px;
   background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%);
   box-shadow: 0 2px 12px rgba(36, 66, 124, 0.05);
+}
+
+.topic-section--practice-hint .topic-section-title {
+  font-size: 18px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #8a5f2c;
+}
+
+.topic-section--lecturer-notes .topic-section-title {
+  font-size: 18px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #4a5568;
+}
+
+.content-card--practice-hint {
+  border: 1px solid #e0c9a8;
+  border-radius: 12px;
+  padding: 16px 18px;
+  background: linear-gradient(180deg, #ffffff 0%, #fff6ea 100%);
+  box-shadow: 0 2px 12px rgba(124, 86, 36, 0.07);
+}
+
+.content-card--lecturer-notes {
+  border: 1px solid #c5cdd9;
+  border-radius: 12px;
+  padding: 16px 18px;
+  background: linear-gradient(180deg, #fafbfc 0%, #eef1f6 100%);
+  box-shadow: 0 2px 10px rgba(36, 66, 124, 0.04);
+}
+
+.practice-hint-line {
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: #3d3428;
+  line-height: 1.5;
+}
+
+.practice-hint-line:last-child {
+  margin-bottom: 0;
+}
+
+.topic-page--practice-paste .topic-section--paste-code .topic-section-title {
+  color: #8a5f2c;
+}
+
+.content-card--paste-code {
+  border: 1px solid #d9c4a8;
+  border-radius: 12px;
+  padding: 16px 18px;
+  background: linear-gradient(180deg, #fffdfb 0%, #fff4e6 100%);
+  box-shadow: 0 2px 14px rgba(124, 86, 36, 0.08);
+}
+
+.paste-code-caption {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a2a44;
+}
+
+.topic-section--implementation-steps .topic-section-title {
+  color: #213a66;
+}
+
+.content-card--implementation-steps {
+  border: 1px solid #c8d6ee;
+  border-radius: 12px;
+  padding: 16px 18px;
+  background: linear-gradient(180deg, #ffffff 0%, #f3f7ff 100%);
+  box-shadow: 0 2px 12px rgba(36, 66, 124, 0.05);
+}
+
+.implementation-steps-lead {
+  margin: 0 0 14px;
+  font-size: 14px;
+  color: #4f6284;
+  line-height: 1.5;
+}
+
+.implementation-steps-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 14px;
+}
+
+.implementation-step-title {
+  font-weight: 700;
+  font-size: 15px;
+  color: #1a2a44;
+  margin-bottom: 6px;
+}
+
+.implementation-step-detail {
+  font-size: 14px;
+  color: #3d4f72;
+  line-height: 1.55;
+}
+
+.topic-section--reference-solution .topic-section-title {
+  color: #1a6b54;
+}
+
+.reference-solution-lead {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: #4f6284;
+  line-height: 1.5;
+}
+
+.content-card--reference-solution {
+  border: 1px solid #b7d8cc;
+  border-radius: 12px;
+  padding: 16px 18px;
+  background: linear-gradient(180deg, #fbfffd 0%, #eef8f3 100%);
+  box-shadow: 0 2px 12px rgba(26, 107, 84, 0.06);
+}
+
+.content-card--reference-solution pre {
+  margin: 0;
+  overflow: auto;
+  max-height: min(70vh, 520px);
 }
 
 .interview-prompt-lead {

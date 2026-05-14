@@ -1020,6 +1020,7 @@ function buildTopicQuestionPlan(
   const deepDivePrompt = pickPrompt(CATEGORY_DEEP_DIVE_PROMPTS[category], number - 1);
   const riskPrompt = pickPrompt(CATEGORY_RISK_PROMPTS[category], number - 1);
   const rolloutPrompt = pickPrompt(CATEGORY_ROLLOUT_PROMPTS[category], number - 1);
+  const followUp = CATEGORY_FOLLOW_UP[category];
   const topicText = question.title;
   const deepDiveQuestion = deepDivePrompt.question.replace('{topic}', topicText);
   const riskQuestion = riskPrompt.question.replace('{topic}', topicText);
@@ -1041,6 +1042,10 @@ function buildTopicQuestionPlan(
     {
       question: rolloutQuestion,
       answerHint: `${rolloutPrompt.hintPrefix} ${prevention}`,
+    },
+    {
+      question: followUp.question,
+      answerHint: followUp.hint,
     },
   ];
 }

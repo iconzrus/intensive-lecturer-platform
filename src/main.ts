@@ -114,14 +114,23 @@ function isCvLandingModule(moduleItem: (typeof modules)[number]): boolean {
   return moduleItem.id === 'cv-interview';
 }
 
+function isPracticeLandingModule(moduleItem: (typeof modules)[number]): boolean {
+  return moduleItem.id.startsWith('practice-');
+}
+
 function renderModuleLanding(): string {
   const interviewSlots = modules
     .map((moduleItem, index) => ({ moduleItem, index }))
     .filter(({ moduleItem }) => isInterviewLandingModule(moduleItem));
+  const practiceSlots = modules
+    .map((moduleItem, index) => ({ moduleItem, index }))
+    .filter(({ moduleItem }) => isPracticeLandingModule(moduleItem));
   const cvSlots = modules
     .map((moduleItem, index) => ({ moduleItem, index }))
     .filter(({ moduleItem }) => isCvLandingModule(moduleItem));
-  const coreModules = modules.filter((m) => !isInterviewLandingModule(m) && !isCvLandingModule(m));
+  const coreModules = modules.filter(
+    (m) => !isInterviewLandingModule(m) && !isCvLandingModule(m) && !isPracticeLandingModule(m),
+  );
 
   const cards = coreModules
     .map((moduleItem, displayIndex) => {
@@ -144,6 +153,39 @@ function renderModuleLanding(): string {
     })
     .join('');
 
+  const practiceCards = practiceSlots
+    .map(({ moduleItem, index }) => {
+      const practiceAvailable = moduleItem.isAvailable !== false;
+      const practiceCardClass = practiceAvailable ? 'module-card module-card--practice' : 'module-card locked';
+      const practiceAction = practiceAvailable ? 'data-action="open-module"' : '';
+      const practiceLock =
+        !practiceAvailable && moduleItem.lockedReason ? `<p class="module-lock">${moduleItem.lockedReason}</p>` : '';
+      const kicker = moduleItem.practiceSectionKicker ?? 'Практика';
+      const practiceMeta =
+        moduleItem.topics.length > 0
+          ? `<p class="module-meta"><span class="module-meta-dot" aria-hidden="true"></span>Тем: ${moduleItem.topics.length}</p>`
+          : '';
+      return `<button type="button" class="${practiceCardClass}" ${practiceAction} data-module-index="${index}" data-module-id="${moduleItem.id}">
+        <p class="module-kicker">${kicker}</p>
+        <h2>${moduleItem.title}</h2>
+        <p class="module-description">${moduleItem.summary ?? `Тем: ${moduleItem.topics.length}.`}</p>
+        ${practiceMeta}
+        ${practiceLock}
+      </button>`;
+    })
+    .join('');
+
+  const practiceBlock =
+    practiceSlots.length > 0
+      ? `<div class="practice-landing-block">
+    <h2 class="practice-landing-title">Практическое интервью</h2>
+    <p class="practice-landing-intro">Один слот — фиксированная матрица M1–M6 на ~60 минут (см. первую карточку модуля). Каждая карточка — сниппет «вставил в IDE — сделал»; без произвольного выбора из пула.</p>
+    <div class="module-grid module-grid--practice">
+      ${practiceCards}
+    </div>
+  </div>`
+      : '';
+
   if (interviewSlots.length === 0) {
     return `<section class="module-landing">
     <div class="module-hero">
@@ -152,6 +194,7 @@ function renderModuleLanding(): string {
     </div>
     <h2 class="module-section-title">Учебные модули</h2>
     <div class="module-grid">${cards}</div>
+    ${practiceBlock}
   </section>`;
   }
 
@@ -223,6 +266,7 @@ function renderModuleLanding(): string {
     </div>
     <h2 class="module-section-title">Учебные модули</h2>
     <div class="module-grid">${cards}</div>
+    ${practiceBlock}
     ${interviewBlock}
     ${cvBlock}
   </section>`;
@@ -536,6 +580,75 @@ function normalizeCvAnswer(text: string): string {
   return normalized;
 }
 
+function buildCleanReferenceSolution(raw: string): string {
+  const normalized = raw.replace(/\r\n/g, '\n');
+  const lines = normalized.split('\n');
+  const withoutBlockComments: string[] = [];
+  let inBlockComment = false;
+
+  for (const line of lines) {
+    let current = line;
+    let out = '';
+    let i = 0;
+
+    while (i < current.length) {
+      if (inBlockComment) {
+        const end = current.indexOf('*/', i);
+        if (end === -1) {
+          i = current.length;
+          break;
+        }
+        inBlockComment = false;
+        i = end + 2;
+        continue;
+      }
+
+      const blockStart = current.indexOf('/*', i);
+      const lineComment = current.indexOf('//', i);
+
+      let next = -1;
+      let kind: 'block' | 'line' | null = null;
+      if (blockStart !== -1 && (lineComment === -1 || blockStart < lineComment)) {
+        next = blockStart;
+        kind = 'block';
+      } else if (lineComment !== -1) {
+        next = lineComment;
+        kind = 'line';
+      }
+
+      if (kind === null) {
+        out += current.slice(i);
+        i = current.length;
+      } else if (kind === 'line') {
+        out += current.slice(i, next);
+        i = current.length;
+      } else {
+        out += current.slice(i, next);
+        i = next + 2;
+        inBlockComment = true;
+      }
+    }
+
+    withoutBlockComments.push(out);
+  }
+
+  const noSqlCommentLines = withoutBlockComments.map((line) => line.replace(/(^|\s)--.*$/, '$1'));
+  const noHashCommentLines = noSqlCommentLines.map((line) => line.replace(/^\s*#.*$/, ''));
+  const noSemicolonCommentLines = noHashCommentLines.map((line) => line.replace(/^\s*;\s*.*$/, ''));
+
+  const compact: string[] = [];
+  for (const line of noSemicolonCommentLines) {
+    const trimmed = line.trim();
+    if (trimmed.length === 0 && compact.length > 0 && compact[compact.length - 1].trim().length === 0) {
+      continue;
+    }
+    compact.push(line);
+  }
+
+  const cleaned = compact.join('\n').trim();
+  return cleaned.length > 0 ? cleaned : normalized.trim();
+}
+
 function renderTopicPage(topic: TopicContent): string {
   const moduleData = modules[state.activeModuleIndex];
   const interview4ReviewMeta = moduleData?.id === 'interview-4' ? getInterview4ReviewMeta(topic.id) : undefined;
@@ -628,6 +741,7 @@ function renderTopicPage(topic: TopicContent): string {
     topic.id.startsWith('int-3-') ||
     topic.id.startsWith('int-4-') ||
     topic.id.startsWith('int-5-') ||
+    topic.id.startsWith('prac-') ||
     topic.id.startsWith('cvb-') ||
     topic.id.startsWith('prj-') ||
     topic.id.startsWith('proc-') ||
@@ -665,12 +779,17 @@ function renderTopicPage(topic: TopicContent): string {
       </li>`,
     )
     .join('');
+  const questionPlanLead =
+    moduleData.id === 'practice-interview'
+      ? 'Подсказки к слоту: что уточнить после попытки в IDE или если студент ушёл в общие слова без кода.'
+      : 'Ведите тему по порядку: у каждого вопроса ниже есть короткий ориентир, что считать нормальным ответом.';
+
   const questionPlanSection =
     isInterviewPack && questionPlanItems
       ? `<section class="topic-section topic-section--question-plan">
       <h3 class="topic-section-title">План вопросов</h3>
       <div class="content-card content-card--question-plan">
-        <p class="interview-plan-lead">Ведите тему по порядку: у каждого вопроса ниже есть короткий ориентир, что считать нормальным ответом.</p>
+        <p class="interview-plan-lead">${questionPlanLead}</p>
         <ol class="interview-plan-list">${questionPlanItems}</ol>
       </div>
     </section>`
@@ -681,10 +800,12 @@ function renderTopicPage(topic: TopicContent): string {
       ? 'Термины — в зелёном блоке «Словарь терминов» сразу над этой карточкой. Здесь только вопросы; полный разбор и шпаргалка — ещё ниже.'
       : 'Задавайте по очереди — ответы ниже в разделе «Вопросы с короткими ответами».';
 
+  const interviewPromptTitle = moduleData.id === 'practice-interview' ? 'После кода (устно)' : 'Вопросы для интервью';
+
   const interviewPromptSection =
     isInterviewPack && topic.interviewFocus.length > 0
       ? `<section class="topic-section topic-section--interview-prompt">
-      <h3 class="topic-section-title">Вопросы для интервью</h3>
+      <h3 class="topic-section-title">${interviewPromptTitle}</h3>
       <div class="content-card content-card--interview-prompt">
         <p class="interview-prompt-lead">${interviewPromptLead}</p>
         <ol class="interview-prompt-list">
@@ -725,12 +846,55 @@ function renderTopicPage(topic: TopicContent): string {
     </section>`
     : '';
 
-  return `<article class="topic-page">
-    ${glossarySection}
-    ${interview4ReviewSection}
-    ${questionPlanSection}
-    ${interviewPromptSection}
-    <section class="topic-section">
+  const practiceHintTitle = moduleData.id === 'practice-interview' ? 'Практика в слот' : 'Практика';
+  const practiceHintSection = moduleData.id === 'practice-interview' && topic.practiceHint
+    ? `<section class="topic-section topic-section--practice-hint">
+      <h3 class="topic-section-title">${practiceHintTitle}</h3>
+      <div class="content-card content-card--practice-hint">
+        <p class="practice-hint-line"><strong>Задание:</strong> ${highlightTerms(cvText(topic.practiceHint.task))}</p>
+        <p class="practice-hint-line"><strong>Таймбокс:</strong> ${topic.practiceHint.timeboxMinutes} мин.</p>
+        <p class="practice-hint-line"><strong>Ожидаемый результат:</strong> ${highlightTerms(
+          cvText(topic.practiceHint.expectedOutcome),
+        )}</p>
+        <p class="practice-hint-line"><strong>Проверка ведущего:</strong> ${highlightTerms(
+          cvText(topic.practiceHint.mentorCheck),
+        )}</p>
+      </div>
+    </section>`
+    : '';
+
+  const lecturerNotesSection = '';
+
+  const referenceSolutionRaw = topic.codeExample.referenceSolution;
+  const referenceSolutionClean = referenceSolutionRaw ? buildCleanReferenceSolution(referenceSolutionRaw) : '';
+  const referenceSolutionSection = referenceSolutionRaw
+    ? `<section class="topic-section topic-section--reference-solution">
+      <h3 class="topic-section-title">Эталон: итоговый код</h3>
+      <p class="reference-solution-lead">Сначала идёт чистое рабочее решение без учебных комментариев. Ниже — тот же код с маркерами <strong>[Шаг …]</strong> для пошагового разбора.</p>
+      <div class="content-card content-card--reference-solution">
+        <h4>Чистое решение</h4>
+        <pre><code>${escapeHtml(referenceSolutionClean.replace(/\\n/g, '\n'))}</code></pre>
+      </div>
+      ${
+        referenceSolutionClean !== referenceSolutionRaw
+          ? `<div class="content-card content-card--reference-solution">
+        <h4>Разбор по шагам</h4>
+        <pre><code>${escapeHtml(referenceSolutionRaw.replace(/\\n/g, '\n'))}</code></pre>
+      </div>`
+          : ''
+      }
+      ${
+        referenceSolutionClean === referenceSolutionRaw
+          ? `<div class="content-card content-card--reference-solution">
+        <p>В этой теме эталон уже дан без дополнительной разметки шагов.</p>
+      </div>
+      `
+          : ''
+      }
+    </section>`
+    : '';
+
+  const analysisSection = `<section class="topic-section">
       <h3 class="topic-section-title">Полный разбор</h3>
       <div class="content-card">
         <section class="section-block section-definition">
@@ -743,7 +907,43 @@ function renderTopicPage(topic: TopicContent): string {
         ${commonMistakesSection}
         ${interviewWithAnswersSection}
       </div>
-    </section>
+    </section>`;
+
+  const codeSection = `<section class="topic-section topic-section--paste-code">
+      <h3 class="topic-section-title">Код для вставки в IDE</h3>
+      <article class="content-card content-card--paste-code">
+        <p class="paste-code-caption">${topic.codeExample.title}</p>
+        <pre><code>${escapeHtml(topic.codeExample.snippet.replace(/\\n/g, '\n'))}</code></pre>
+        ${walkthroughSection}
+        ${productionNote}
+        ${antiPatternBlock}
+      </article>
+    </section>`;
+
+  const isPracticePasteModule = moduleData.id === 'practice-interview';
+
+  if (isPracticePasteModule) {
+    return `<article class="topic-page topic-page--practice-paste">
+    ${glossarySection}
+    ${practiceHintSection}
+    ${codeSection}
+    ${lecturerNotesSection}
+    ${interview4ReviewSection}
+    ${questionPlanSection}
+    ${interviewPromptSection}
+    ${referenceSolutionSection}
+    ${analysisSection}
+  </article>`;
+  }
+
+  return `<article class="topic-page">
+    ${glossarySection}
+    ${practiceHintSection}
+    ${lecturerNotesSection}
+    ${interview4ReviewSection}
+    ${questionPlanSection}
+    ${interviewPromptSection}
+    ${analysisSection}
 
     <section class="topic-section">
       <h3 class="topic-section-title">Код и пояснения</h3>
@@ -755,6 +955,7 @@ function renderTopicPage(topic: TopicContent): string {
         ${antiPatternBlock}
       </article>
     </section>
+    ${referenceSolutionSection}
   </article>`;
 }
 
@@ -783,11 +984,15 @@ function render(): void {
             topic.id.startsWith('int-3-') ||
             topic.id.startsWith('int-4-') ||
             topic.id.startsWith('int-5-') ||
-            moduleData.id === 'cv-interview'
+            topic.id.startsWith('prac-') ||
+            moduleData.id === 'cv-interview' ||
+            moduleData.id === 'practice-interview'
               ? `<p class="content-header-hint">${
-                  topic.glossary && topic.glossary.length > 0
-                    ? 'Первый блок под заголовком темы — <strong>Словарь терминов</strong> (расшифровки из вопроса). Ниже — вопросы для беседы (карточка может «прилипать» при прокрутке).'
-                    : 'Текст вопросов дублируется вверху страницы — удобно держать на экране во время беседы.'
+                  moduleData.id === 'practice-interview'
+                    ? 'Слот идёт по фиксированной матрице M1–M6 с первой карточки модуля. Сначала «Практика в слот» и блок <strong>Код для вставки в IDE</strong> — это то, что кидаете студенту. Теория и ответы ниже; «Только для ведущего» не зачитывать вслух.'
+                    : topic.glossary && topic.glossary.length > 0
+                      ? 'Первый блок под заголовком темы — <strong>Словарь терминов</strong> (расшифровки из вопроса). Ниже — вопросы для беседы (карточка может «прилипать» при прокрутке).'
+                      : 'Текст вопросов дублируется вверху страницы — удобно держать на экране во время беседы.'
                 }</p>`
               : ''
           }

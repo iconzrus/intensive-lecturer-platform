@@ -9,6 +9,10 @@ export interface TopicCodeExample {
   antiPatternSnippet?: string;
   antiPatternNote?: string;
   productionNote?: string;
+  /** Эталон: код/скрипт; шаги помечайте в комментариях вида // [Шаг N] или -- [Шаг N]. */
+  referenceSolution?: string;
+  /** Язык подсветки эталона; по умолчанию как у `language`. */
+  referenceSolutionLanguage?: 'java' | 'text';
 }
 
 export interface TopicResourceLink {
@@ -65,6 +69,10 @@ export interface TopicContent {
   usefulLinks: TopicResourceLink[];
   estimatedMinutes: number;
   glossary?: TopicGlossaryEntry[];
+  /** Задание для live-code в слоте: таймбокс и критерии для ведущего. */
+  practiceHint?: TopicPracticeHint;
+  /** Заметки только для ведущего: что спросить, как разжать застой, куда свернуть. */
+  lecturerNotes?: string[];
 }
 
 export interface LectureModule {
@@ -81,4 +89,6 @@ export interface LectureModule {
   summary?: string;
   /** Подзаголовок на карточке в блоке «Интервью» на главной (только для модулей с id `interview-*`). */
   interviewSectionKicker?: string;
+  /** Подзаголовок на карточке в блоке «Практическое интервью» (модули с id `practice-*`). */
+  practiceSectionKicker?: string;
 }

@@ -205,6 +205,72 @@ class PriceService {
       estimatedMinutes: 6,
     }),
     topic({
+      id: 'web-network-basics',
+      title: 'Базовые веб и сеть: OSI, HTTP-методы, Tomcat и lifecycle сервлета',
+      simpleDefinitionOverride:
+        'Базовый web/network минимум: модель OSI, идемпотентность HTTP-методов, роль сервлет-контейнера и жизненный цикл сервлета.',
+      quickAnswer:
+        'OSI — 7-уровневая модель сети; POST и PATCH считаются неидемпотентными; Apache Tomcat — контейнер сервлетов; ключевые этапы сервлета: init, service, destroy.',
+      explainBrief: [
+        'OSI используют как «карту» при диагностике: на каком уровне проблема — сеть, транспорт, приложение.',
+        'Идемпотентность HTTP важна для ретраев: POST/PATCH обычно неидемпотентны, повтор может изменить состояние ещё раз.',
+        'В Java EE/Servlet-мире запросы обрабатывает контейнер сервлетов; приложение не работает «само по себе» без контейнера.',
+        'Apache Tomcat — самый частый пример сервлет-контейнера для Java web-приложений.',
+        'Жизненный цикл сервлета: init (инициализация), service/doGet/doPost (обработка запросов), destroy (освобождение ресурсов).',
+      ],
+      interviewFocus: [
+        {
+          question: 'Почему POST и PATCH обычно считают неидемпотентными?',
+          expectedAnswer:
+            'Повторный вызов может снова изменить состояние: создать ещё одну запись или применить ещё одно частичное изменение.',
+        },
+        {
+          question: 'Что именно делает Tomcat в контексте Java web?',
+          expectedAnswer:
+            'Поднимает сервлет-контейнер, принимает HTTP-запросы и делегирует их lifecycle-методам сервлетов.',
+        },
+      ],
+      codeExample: {
+        title: 'Минимальный сервлет и его жизненный цикл',
+        language: 'java',
+        snippet: `import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+public class PingServlet extends HttpServlet {
+    @Override
+    public void init() {
+        // init
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        // service (через doGet)
+        resp.getWriter().write("pong");
+    }
+
+    @Override
+    public void destroy() {
+        // destroy
+    }
+}`,
+        walkthrough: [
+          'init вызывается один раз при запуске/инициализации сервлета.',
+          'doGet/doPost вызываются для каждого входящего запроса.',
+          'destroy вызывается при остановке и нужен для cleanup.',
+        ],
+        commonPitfall: 'Путать Tomcat (сервлет-контейнер) с СУБД, брокером сообщений или web-браузером.',
+      },
+      usefulLinksOverride: MODULE3_LINKS,
+      glossary: [
+        { term: 'OSI', meaning: 'Сетевая модель из 7 уровней для описания и диагностики сетевых взаимодействий.' },
+        { term: 'Идемпотентность', meaning: 'Повторный вызов операции не меняет итог после первого применения.' },
+        { term: 'Servlet container', meaning: 'Среда выполнения Java-сервлетов (например, Apache Tomcat).' },
+      ],
+      estimatedMinutes: 5,
+    }),
+    topic({
       id: 'git-push-pull-fetch',
       title: 'Git: push, pull, fetch и что именно они делают',
       simpleDefinitionOverride:

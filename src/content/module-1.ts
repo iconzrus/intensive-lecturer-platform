@@ -449,6 +449,141 @@ const simpleDefinitionsByTopicId: Record<string, string> = {
     'StringBuilder и StringBuffer позволяют эффективно собирать строку по частям без создания лишних промежуточных объектов.',
 };
 
+const glossaryByTopicId: Record<string, NonNullable<Topic['glossary']>> = {
+  'languages-overview': [
+    { term: 'Трансляция', meaning: 'Преобразование исходного кода в форму исполнения (байткод/машинный код).' },
+    { term: 'Типизация', meaning: 'Правила, по которым язык проверяет типы значений и операций.' },
+  ],
+  'jvm-jre-jdk': [
+    { term: 'JVM', meaning: 'Виртуальная машина, которая исполняет Java-байткод.' },
+    { term: 'JDK', meaning: 'Набор для разработки: JRE плюс компилятор и инструменты.' },
+  ],
+  'memory-areas': [
+    { term: 'Heap', meaning: 'Область памяти для объектов и массивов.' },
+    { term: 'Stack', meaning: 'Память кадров вызова методов и локальных переменных.' },
+  ],
+  'class-loaders': [
+    { term: 'ClassLoader', meaning: 'Компонент JVM, который загружает классы в память.' },
+    { term: 'Parent delegation', meaning: 'Сначала запрос родителю, затем попытка загрузить класс самим.' },
+  ],
+  'class-object': [
+    { term: 'Class<?>', meaning: 'Объект-метаданные типа во время выполнения.' },
+    { term: 'Reflection', meaning: 'API для чтения информации о классах, полях и методах.' },
+  ],
+  'classes-objects': [
+    { term: 'Класс', meaning: 'Шаблон данных и поведения будущих объектов.' },
+    { term: 'Объект', meaning: 'Конкретный экземпляр класса с собственным состоянием.' },
+  ],
+  'class-structure': [
+    { term: 'Поле', meaning: 'Переменная уровня класса или экземпляра.' },
+    { term: 'Метод', meaning: 'Именованная операция, реализующая поведение класса.' },
+  ],
+  fields: [
+    { term: 'Instance field', meaning: 'Поле, которое принадлежит конкретному объекту.' },
+    { term: 'Static field', meaning: 'Поле, общее для всех экземпляров класса.' },
+  ],
+  constructors: [
+    { term: 'Конструктор', meaning: 'Специальный метод инициализации объекта при создании.' },
+    { term: 'Перегрузка конструктора', meaning: 'Несколько конструкторов с разными параметрами.' },
+  ],
+  'methods-overloading': [
+    { term: 'Сигнатура метода', meaning: 'Имя метода и типы параметров (без возвращаемого типа).' },
+    { term: 'Overloading', meaning: 'Методы с одинаковым именем и разными списками параметров.' },
+  ],
+  'init-blocks': [
+    { term: 'Instance initializer', meaning: 'Блок инициализации, который выполняется при создании объекта.' },
+    { term: 'Static initializer', meaning: 'Блок инициализации, который выполняется при загрузке класса.' },
+  ],
+  'modifiers-overview': [
+    { term: 'Модификатор', meaning: 'Ключевое слово, задающее доступ или свойства члена класса.' },
+    { term: 'Контракт', meaning: 'Ограничения и гарантии использования API.' },
+  ],
+  'static-final-abstract': [
+    { term: 'static', meaning: 'Член принадлежит классу, а не экземпляру.' },
+    { term: 'final', meaning: 'Запрещает переопределение/наследование или повторное присваивание.' },
+  ],
+  'access-modifiers': [
+    { term: 'private', meaning: 'Доступ только внутри текущего класса.' },
+    { term: 'public', meaning: 'Доступ из любого места, где виден класс.' },
+  ],
+  'property-setting': [
+    { term: 'Builder', meaning: 'Пошаговая сборка объекта с именованными параметрами.' },
+    { term: 'Factory method', meaning: 'Статический метод создания объекта с читаемым именем.' },
+  ],
+  'abstract-vs-interface': [
+    { term: 'Абстрактный класс', meaning: 'База с общей реализацией и состоянием для наследников.' },
+    { term: 'Интерфейс', meaning: 'Контракт поведения, который может реализовать любой класс.' },
+  ],
+  'enum-basics': [
+    { term: 'enum', meaning: 'Тип с фиксированным набором констант.' },
+    { term: 'Маркер домена', meaning: 'Ограничение допустимых значений на уровне типа.' },
+  ],
+  'mutable-immutable': [
+    { term: 'Mutable', meaning: 'Объект, чье состояние меняется после создания.' },
+    { term: 'Immutable', meaning: 'Объект с неизменяемым состоянием после создания.' },
+  ],
+  'inner-nested': [
+    { term: 'Nested class', meaning: 'Класс, объявленный внутри другого класса.' },
+    { term: 'Inner class', meaning: 'Нестатический вложенный класс, связанный с внешним объектом.' },
+  ],
+  'local-anonymous': [
+    { term: 'Локальный класс', meaning: 'Класс, объявленный внутри метода или блока.' },
+    { term: 'Анонимный класс', meaning: 'Одноразовая реализация без собственного имени.' },
+  ],
+  'object-class': [
+    { term: 'Object', meaning: 'Корневой класс иерархии Java-объектов.' },
+    { term: 'getClass()', meaning: 'Метод получения runtime-класса объекта.' },
+  ],
+  'object-methods': [
+    { term: 'equals()', meaning: 'Проверяет логическое равенство объектов.' },
+    { term: 'hashCode()', meaning: 'Возвращает хеш-код для хеш-структур данных.' },
+  ],
+  'equals-hashcode': [
+    { term: 'Контракт equals/hashCode', meaning: 'Если equals true, hashCode у объектов должен совпадать.' },
+    { term: 'Hash-based collection', meaning: 'Коллекции, которые ищут элементы по хешу.' },
+  ],
+  'clone-method': [
+    { term: 'Shallow copy', meaning: 'Копируются поля, но вложенные ссылки остаются общими.' },
+    { term: 'Cloneable', meaning: 'Маркерный интерфейс, разрешающий вызов super.clone().' },
+  ],
+  'oop-principles': [
+    { term: 'Инкапсуляция', meaning: 'Скрытие деталей реализации за публичным API.' },
+    { term: 'Полиморфизм', meaning: 'Работа через общий контракт с разным поведением реализаций.' },
+  ],
+  'inheritance-association': [
+    { term: 'Наследование', meaning: 'Отношение is-a: дочерний класс расширяет родительский.' },
+    { term: 'Композиция', meaning: 'Отношение has-a: объект состоит из других объектов.' },
+  ],
+  'method-overriding': [
+    { term: 'Overriding', meaning: 'Переопределение унаследованного метода с той же сигнатурой.' },
+    { term: 'Динамический dispatch', meaning: 'Выбор реализации метода по фактическому классу объекта.' },
+  ],
+  binding: [
+    { term: 'Static binding', meaning: 'Разрешение вызова на этапе компиляции.' },
+    { term: 'Dynamic binding', meaning: 'Разрешение вызова в runtime по типу объекта.' },
+  ],
+  wrappers: [
+    { term: 'Wrapper', meaning: 'Объектная обертка над примитивным типом.' },
+    { term: 'Autoboxing', meaning: 'Автоматическое преобразование примитива в wrapper и обратно.' },
+  ],
+  'string-class': [
+    { term: 'String', meaning: 'Неизменяемая последовательность символов.' },
+    { term: 'Иммутабельность', meaning: 'Состояние объекта нельзя изменить после создания.' },
+  ],
+  'string-pool': [
+    { term: 'Intern pool', meaning: 'Пул строковых литералов для переиспользования экземпляров.' },
+    { term: 'Литерал строки', meaning: 'Значение в кавычках, которое может быть интернировано.' },
+  ],
+  'string-api': [
+    { term: 'split()', meaning: 'Разбивает строку на части по регулярному выражению.' },
+    { term: 'trim()', meaning: 'Удаляет пробелы по краям строки.' },
+  ],
+  'string-builder-buffer': [
+    { term: 'StringBuilder', meaning: 'Изменяемый буфер строк без синхронизации.' },
+    { term: 'StringBuffer', meaning: 'Потокобезопасный изменяемый буфер строк.' },
+  ],
+};
+
 export function topic(input: LegacyTopicInput): Topic {
   const knowledge = buildKnowledgeBoost(input.title);
   const commonMistakes = uniqueLines(
@@ -471,11 +606,11 @@ export function topic(input: LegacyTopicInput): Topic {
       : undefined,
   }));
 
-  const questionPlan = input.questionPlan?.map((item) => ({
+  const questionPlan = (input.questionPlan ?? []).map((item) => ({
     question: clarifyTerminology(item.question),
     answerHint: clarifyTerminology(item.answerHint),
   }));
-  const selfCheck = uniqueLines((questionPlan ?? []).map((item) => item.question));
+  const selfCheck = uniqueLines(questionPlan.map((item) => item.question));
 
   const interviewTraps = uniqueLines([
     'Отвечают определением из учебника без примера из практики.',
@@ -490,13 +625,14 @@ export function topic(input: LegacyTopicInput): Topic {
     `${input.title} — ${input.explainBrief[0] ?? input.quickAnswer}`;
   const simpleDefinition = clarifyTerminology(simpleDefinitionRaw);
 
-  const glossary =
-    input.glossary && input.glossary.length > 0
-      ? input.glossary.map((entry) => ({
-          term: clarifyTerminology(entry.term),
-          meaning: clarifyTerminology(entry.meaning),
-        }))
-      : undefined;
+  const glossarySource =
+    input.glossary && input.glossary.length > 0 ? input.glossary : glossaryByTopicId[input.id];
+  const glossary = glossarySource
+    ? glossarySource.map((entry) => ({
+        term: clarifyTerminology(entry.term),
+        meaning: clarifyTerminology(entry.meaning),
+      }))
+    : undefined;
 
   return {
     id: input.id,
@@ -505,7 +641,7 @@ export function topic(input: LegacyTopicInput): Topic {
     simpleDefinition,
     quickAnswer: clarifiedQuickAnswer,
     explainBrief: clarifiedExplainBrief,
-    questionPlan,
+    questionPlan: questionPlan.length > 0 ? questionPlan : undefined,
     keyPoints,
     commonMistakes: finalCommonMistakes,
     selfCheck,
@@ -515,6 +651,8 @@ export function topic(input: LegacyTopicInput): Topic {
     usefulLinks: input.usefulLinksOverride ?? buildUsefulLinks(input.title),
     estimatedMinutes: input.estimatedMinutes,
     glossary,
+    practiceHint: input.practiceHint,
+    lecturerNotes: input.lecturerNotes,
   };
 }
 
@@ -1418,6 +1556,56 @@ class SmsNotifier extends BaseNotifier {
       },
       lecturerNotes: ['Удобная точка для SOLID: зависимость от абстракций, а не от реализаций.'],
       estimatedMinutes: 3,
+    }),
+    topic({
+      id: 'enum-basics',
+      title: 'Enum в Java: свойства и ограничения',
+      simpleDefinitionOverride:
+        'Enum — специальный тип для фиксированного набора констант. В отличие от обычного класса, enum не расширяет произвольные типы, но может иметь поля, конструктор, методы и реализовывать интерфейсы.',
+      quickAnswer:
+        'Enum может реализовывать интерфейсы и иметь конструкторы/поля/методы. От enum нельзя наследоваться обычным классом, а сам enum не расширяет произвольный класс.',
+      explainBrief: [
+        'Enum полезен, когда доменная модель допускает конечный список значений: статусы, роли, типы событий.',
+        'В enum можно хранить дополнительные данные (code, title) через поля и конструктор.',
+        'Конструктор enum всегда неявно private и вызывается только для объявленных констант.',
+        'Enum может реализовать интерфейс, что удобно для полиморфного поведения.',
+        'Наследование от enum внешним классом не допускается: набор значений должен оставаться закрытым.',
+      ],
+      interviewFocus: [
+        {
+          question: 'Можно ли от enum наследоваться обычным классом?',
+          expectedAnswer:
+            'Нет. Enum закрывает набор констант и не поддерживает наследование внешними классами.',
+        },
+      ],
+      codeExample: {
+        title: 'Enum с конструктором и интерфейсом',
+        language: 'java',
+        snippet: `interface CodeProvider {
+  String code();
+}
+
+enum OrderStatus implements CodeProvider {
+  NEW("N"), DONE("D");
+
+  private final String code;
+
+  OrderStatus(String code) {
+    this.code = code;
+  }
+
+  @Override
+  public String code() {
+    return code;
+  }
+}`,
+        walkthrough: [
+          'Enum-константы создаются через конструктор enum и могут хранить данные.',
+          'Интерфейс позволяет использовать enum в полиморфных API.',
+        ],
+        commonPitfall: 'Считать, что enum можно «расширить» наследованием как обычный класс.',
+      },
+      estimatedMinutes: 2,
     }),
     topic({
       id: 'mutable-immutable',
