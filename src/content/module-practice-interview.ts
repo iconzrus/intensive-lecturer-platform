@@ -17,7 +17,7 @@ const PRACTICE_LINKS = [
 export const modulePracticeInterview: LectureModule = {
   id: 'practice-interview',
   practiceSectionKicker: 'Один слот — одна матрица',
-  title: 'Практика: матрица на 60 минут (мидл, под ключ)',
+  title: 'Практика: матрица на 60 минут',
   targetDurationMinutes: 60,
   audienceLevel: 'Middle / мидл + IDE',
   isAvailable: true,
@@ -26,7 +26,7 @@ export const modulePracticeInterview: LectureModule = {
   topics: [
     topic({
       id: 'prac-00-readme',
-      title: 'Матрица практики на 60 минут (мидл, под ключ)',
+      title: 'Матрица практики на 60 минут',
       simpleDefinitionOverride:
         'Эта карточка — «обложка» практического слота: на одном экране видно порядок задач, сколько минут на каждую и что именно считается результатом. Дальше в сайдбаре идут шесть карточек M1–M6 в том же порядке — их не переставляют и не заменяют соседними темами.',
       quickAnswer:
