@@ -671,9 +671,21 @@ const QUESTION_OVERRIDES: Record<string, Pick<QuestionDef, 'practicalHint' | 'pi
   },
   'int-5-43': {
     practicalHint:
-      'Частый рабочий фикс: вынести второй метод в отдельный bean и вызывать через него, чтобы вызов прошёл через Spring proxy.',
+      'Proxy-based AOP: TransactionInterceptor на внешнем вызове; self-invocation (`this.*`) обходит proxy. JDK proxy — interface; CGLIB — subclass, не для final.',
     pitfall: 'Думать, что `this.otherTransactionalMethod()` автоматически откроет новую транзакцию.',
-    prevention: 'Проверять путь вызова, tx-логи и границы begin/commit; избегать self-invocation для транзакционных сценариев.',
+    prevention: 'Отдельный bean/self-interface proxy; не final transactional methods; tx begin/commit в логах.',
+  },
+  'int-5-14': {
+    practicalHint:
+      'hashCode → bucket, equals → ключ в цепочке/дереве; коллизии, resize/load factor, treeification Java 8+.',
+    pitfall: 'Ответить только «O(1)» без worst-case и mutable key.',
+    prevention: 'Контракт equals/hashCode; immutable keys; понимать rehash при росте map.',
+  },
+  'int-5-16': {
+    practicalHint:
+      'Пример: WHERE status=\'PAID\' до GROUP BY; HAVING count(*)>10 после. Ранняя фильтрация в WHERE снижает объём группировки.',
+    pitfall: 'Условие на агрегат в WHERE.',
+    prevention: 'Этапы: WHERE → GROUP BY → HAVING; проверить EXPLAIN.',
   },
   'int-5-47': {
     practicalHint:

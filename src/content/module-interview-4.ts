@@ -138,6 +138,8 @@ retries.incrementAndGet();`,
         'При коллизии несколько ключей могут попасть в один bucket, тогда помогает `equals`.',
         'Если два ключа равны по `equals`, их `hashCode` тоже обязан совпадать.',
         'Если mutable-поле участвует в `equals/hashCode` и меняется после помещения в map, ключ может стать недоступным для поиска.',
+        'При переполнении bucket длинные цепочки в Java 8+ могут treeify; средняя сложность get — O(1), worst-case аккуратно O(n) / O(log n) на bucket.',
+        'Resize/rehash при росте load factor — ещё один production-риск при «бесконечном» росте map.',
       ],
       questionPlan: [
         {
@@ -185,6 +187,8 @@ String value = map.get(key); // может вернуть null`,
         { term: 'Bucket', meaning: 'Корзина внутри массива HashMap, куда попадают ключи с определённым hash.' },
         { term: 'Node', meaning: 'Элемент HashMap: хранит hash, ключ, значение и ссылку на следующий узел.' },
         { term: 'Collision', meaning: 'Коллизия: разные ключи попали в один bucket и требуют дополнительного сравнения.' },
+        { term: 'Load factor', meaning: 'Порог заполнения map; при превышении — resize и rehash.' },
+        { term: 'Treeification', meaning: 'Длинная цепочка в bucket превращается в дерево (Java 8+).' },
       ],
       estimatedMinutes: 5,
     }),
@@ -836,6 +840,8 @@ Redis:
         'Из-за этого self-invocation внутри одного класса — частая ловушка.',
         'Прокси также участвуют в других механизмах Spring: security, caching, async и т.д.',
         'Важно различать уровень аннотации и реальный путь вызова в рантайме.',
+        'JDK dynamic proxy — через interface; CGLIB — subclass proxy. Final class/method мешает CGLIB.',
+        'Production-safe: transactional service/methods не делают final; проверяют tx в логах TransactionInterceptor.',
       ],
       questionPlan: [
         {
@@ -882,6 +888,9 @@ service.otherMethod() -> this.method()
         { term: 'Proxy', meaning: 'Объект-посредник, который перехватывает вызов и добавляет поведение.' },
         { term: 'Self-invocation', meaning: 'Вызов метода внутри того же класса напрямую через `this`, минуя proxy.' },
         { term: 'Transaction boundary', meaning: 'Граница, где транзакция начинается и где завершается.' },
+        { term: 'CGLIB proxy', meaning: 'Subclass proxy; не работает с final class/method.' },
+        { term: 'JDK dynamic proxy', meaning: 'Proxy интерфейса; вызов через методы интерфейса.' },
+        { term: 'TransactionInterceptor', meaning: 'AOP-компонент, открывающий/закрывающий транзакцию вокруг метода.' },
       ],
       estimatedMinutes: 5,
     }),
@@ -1019,6 +1028,8 @@ service.otherMethod() -> this.method()
         'Metadata в gRPC — это служебная информация: auth, tracing, correlation id, tenant и т.д.',
         'Streaming бывает server-streaming, client-streaming и bidirectional-streaming.',
         'Версионирование контракта в protobuf требует аккуратно добавлять поля и не ломать существующие номера полей.',
+        'Protobuf не единственный теоретический формат, но `.proto` — production-default и source of truth в gRPC ecosystem.',
+        'JSON transcoding на gateway — опция, не замена нормального gRPC-контракта.',
         'Сильный ответ по gRPC обычно включает не только “быстрее REST”, но и границы применимости: внутренние сервисы, typed-контракты, сложность дебага и работы с браузерами.',
       ],
       questionPlan: [
@@ -1082,6 +1093,7 @@ service.otherMethod() -> this.method()
         'GraphQL умеет вернуть часть данных и список ошибок одновременно; это сильно отличается от привычной модели REST по статус-кодам.',
         'Хорошая схема должна быть понятной клиентам и не заставлять их угадывать структуру данных.',
         'На собеседовании полезно упомянуть DataLoader, валидацию схемы и разделение технических и бизнес-ошибок.',
+        'Минусы vs REST: кеш, security depth/complexity, observability; плюсы — выбор полей, меньше overfetching.',
       ],
       questionPlan: [
         {

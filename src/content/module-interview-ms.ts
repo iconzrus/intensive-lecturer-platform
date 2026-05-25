@@ -917,6 +917,8 @@ public class OrderService {
         'Транзакция не пересекает границу в другой сервис по HTTP — там своя сессия БД.',
         'Длинные внешние HTTP и тяжёлые расчёты внутри @Transactional держат соединение с БД и блокировки — вынести за пределы транзакции.',
         'Уровни изоляции (read committed vs repeatable read) влияют на phantom reads; для отчётов иногда отдельное read-only соединение.',
+        'JDK dynamic proxy — через interface; CGLIB — subclass proxy. Final class/method блокирует CGLIB.',
+        'Production-safe: transactional service/methods не final; проверять TransactionInterceptor и tx boundaries в логах.',
       ],
       interviewFocus: [
         {
@@ -965,6 +967,14 @@ public class Bad {
           term: 'rollbackFor',
           meaning:
             'rollbackFor — для каких checked-исключений Spring должен откатывать (по умолчанию в основном runtime).',
+        },
+        {
+          term: 'CGLIB proxy',
+          meaning: 'Subclass proxy; не работает с final class/method.',
+        },
+        {
+          term: 'Self-invocation',
+          meaning: 'Вызов this.* обходит transactional proxy.',
         },
       ],
       estimatedMinutes: 5,

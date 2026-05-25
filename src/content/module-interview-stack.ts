@@ -116,6 +116,8 @@ export const moduleInterviewStack: LectureModule = {
         'Сами beans объявляют аннотациями (@Component/@Service/@Repository) или через @Configuration + @Bean.',
         'Контекст собирает граф зависимостей на старте и может проксировать beans для AOP (например транзакций).',
         'DI снижает связанность: сервис зависит от интерфейса, а не от конкретной реализации.',
+        'Образ Map — упрощение: beanName → BeanDefinition/instance; singleton registry, scopes, BeanPostProcessor.',
+        'Spring Framework — IoC/AOP; Spring Boot добавляет auto-configuration и starters.',
       ],
       extraKeyPoints: [
         'На собесе полезно нарисовать цепочку: Controller → Service → Repository как beans.',
@@ -670,11 +672,18 @@ export const moduleInterviewStack: LectureModule = {
         },
       ],
       codeExample: {
-        title: 'LEFT JOIN + агрегация',
+        title: 'WHERE vs HAVING (orders)',
         language: 'text',
-        snippet: `SELECT u.id, COUNT(o.id) c\nFROM users u\nLEFT JOIN orders o ON o.user_id=u.id\nGROUP BY u.id;`,
-        walkthrough: ['LEFT сохраняет пользователей без заказов.'],
-        commonPitfall: 'Путать INNER и LEFT и «терять» строки.',
+        snippet: `SELECT user_id, count(*) AS paid_cnt
+FROM orders
+WHERE status = 'PAID'
+GROUP BY user_id
+HAVING count(*) > 10;`,
+        walkthrough: [
+          'WHERE отсекает строки до GROUP BY; HAVING фильтрует группы после агрегации.',
+          'Ранняя фильтрация в WHERE снижает объём группировки.',
+        ],
+        commonPitfall: 'Условие на агрегат писать в WHERE вместо HAVING.',
       },
       usefulLinksOverride: SQL_LINKS,
       glossary: [
@@ -682,6 +691,8 @@ export const moduleInterviewStack: LectureModule = {
         { term: 'LEFT JOIN', meaning: 'Сохраняет строки из левой таблицы даже без совпадений справа.' },
         { term: 'CTE', meaning: 'WITH — именованный подзапрос для читаемости (и иногда оптимизации).' },
         { term: 'EXISTS', meaning: 'Проверка существования строк, часто эффективнее, чем COUNT(*).' },
+        { term: 'WHERE', meaning: 'Фильтрация строк до GROUP BY.' },
+        { term: 'HAVING', meaning: 'Фильтрация агрегированных групп после GROUP BY.' },
       ],
       estimatedMinutes: 6,
     }),
