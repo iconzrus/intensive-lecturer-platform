@@ -9,6 +9,8 @@ import { moduleInterview3 } from './module-interview-3';
 import { moduleInterview4 } from './module-interview-4';
 import { moduleInterview5 } from './module-interview-5';
 import { moduleInterview6 } from './module-interview-6';
+import { moduleInterview7 } from './module-interview-7';
+import { moduleInterviewProduction60 } from './module-interview-production-60';
 import { modulePracticeInterview } from './module-practice-interview';
 import { moduleCvInterview } from './module-cv-interview';
 import type { LectureModule } from './schema';
@@ -35,5 +37,7 @@ export const modules: LectureModule[] = [
   moduleInterview4,
   moduleInterview5,
   moduleInterview6,
+  moduleInterview7,
+  moduleInterviewProduction60,
   moduleCvInterview,
 ];

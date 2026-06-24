@@ -1,5 +1,14 @@
+// Canonical reuse: docs/content-canonical-map.md — не дублировать учебные темы вручную.
 import type { LectureModule } from './schema';
+import { module3 } from './module-3';
 import { topic } from './module-1';
+
+type Topic = LectureModule['topics'][number];
+
+/** Interview topic id → учебная тема один в один (только другой id для маршрута). */
+const CANONICAL_TOPIC_REUSE: Record<string, { sourceTopicId: string }> = {
+  'int-6-12': { sourceTopicId: 'solid-principles' },
+};
 
 type QuestionDef = {
   id: string;
@@ -94,7 +103,8 @@ const CATEGORY_EXPLAIN_TAIL: Record<Interview6Category, string[]> = {
   ],
   oop: [
     'По ООП важны границы применимости: когда наследование помогает, а когда создаёт хрупкую иерархию.',
-    'Сильный ответ показывает trade-off между моделированием домена и overengineering.',
+    'LSP (canonical module-3): не Bird.fly() для всех — Flyable/FlyingBird; Penguin без полёта.',
+    'SOLID (canonical module-3): не расшифровка букв — OrderService/Notifier, PaymentStrategy, fat ReportActions.',
   ],
   collections: [
     'По коллекциям важно знать контракты интерфейсов и асимптотику операций в реальных структурах.',
@@ -592,7 +602,8 @@ const QUESTIONS: QuestionDef[] = [
     id: 'int-6-05',
     title: 'Отличия HAVING и WHERE.',
     answer: 'WHERE фильтрует строки до GROUP BY; HAVING фильтрует агрегированные группы после GROUP BY.',
-    practicalHint: 'Пример: PAID в WHERE, count(*) > 10 в HAVING — см. codeExample категории sql.',
+    practicalHint:
+      'WHERE status=\'PAID\' до GROUP BY; HAVING count(*)>10 после; тот же пример orders, что в canonical map и codeExample sql.',
     pitfall: 'Условие на агрегат писать в WHERE.',
     prevention: 'Строить запрос по этапам и проверять EXPLAIN.',
   },
@@ -644,20 +655,17 @@ const QUESTIONS: QuestionDef[] = [
   {
     id: 'int-6-11',
     title: 'Как в Java решается проблема: класс птиц, но пингвин и страус не летают?',
-    answer: 'Не делать fly() у всех Bird; вынести Flyable или композицию FlyingBehavior — LSP-friendly дизайн.',
-    practicalHint: 'Практика: Sparrow implements Flyable; Penguin — только Bird без Flyable.',
+    answer:
+      'Не делать fly() у всех Bird (как в module-3): Flyable/FlyingBird; Penguin и Struthio без полёта — без UnsupportedOperationException в базовом контракте.',
+    practicalHint:
+      'Canonical LSP (module-3): Sparrow implements Flyable; Penguin — Bird без Flyable; не ломать подстановку подтипа.',
     pitfall: 'Пустой override fly() или UnsupportedOperationException в базовом контракте.',
     prevention: 'Моделировать способности отдельными интерфейсами/компонентами, не ломая подтипы.',
   },
   {
     id: 'int-6-12',
     title: 'Расскажи про принципы SOLID.',
-    answer:
-      'SRP/OCP/LSP/ISP/DIP снижают хрупкость: одна ответственность, расширение без if-лестниц, заменяемые подтипы, узкие интерфейсы, зависимость от абстракций.',
-    practicalHint:
-      'SRP: OrderService vs Notifier; OCP: PaymentStrategy; LSP: Flyable не Bird.fly(); ISP: не fat interface; DIP: Notifier/PaymentGateway.',
-    pitfall: 'Только расшифровка букв без примеров и без trade-off «когда SOLID избыточен».',
-    prevention: 'Живой пример нарушения + рефакторинг; маркер зрелости — тестируемость без реальной БД/HTTP.',
+    answer: 'Контент темы — полная копия module-3 / solid-principles (см. CANONICAL_TOPIC_REUSE).',
   },
   {
     id: 'int-6-13',
@@ -846,11 +854,6 @@ const QUESTION_LECTURER_NOTES: Record<string, string[]> = {
     'Проверка LSP: плохо — Bird.fly() и UnsupportedOperationException в Penguin.',
     'Хорошо — Flyable или отдельная стратегия; наследование не должно ломать контракт родителя.',
   ],
-  'int-6-12': [
-    'Canonical: module-3 `solid-principles`. Красный флаг — только S-O-L-I-D без кода.',
-    'Production-marker: SOLID ради меньшей хрупкости и тестируемости, не ради «больше интерфейсов».',
-    'LSP: Penguin/Struthio; ISP: fat ReportActions; DIP: Notifier вместо new EmailSender().',
-  ],
   'int-6-16': [
     'Обязательно: hashCode → bucket, equals → совпадение ключа; коллизии, resize/load factor, treeification (Java 8+).',
     'Если только “O(1)” — уточнить worst-case и mutable key.',
@@ -870,16 +873,103 @@ const QUESTION_LECTURER_NOTES: Record<string, string[]> = {
   ],
 };
 
-const QUESTION_EXTRA_KEY_POINTS: Record<string, string[]> = {
+/** Сжатые bullets из canonical source — те же идеи, что в учебных темах (см. content-canonical-map.md). */
+const QUESTION_CANONICAL_SYNC: Record<string, string[]> = {
   'int-6-01': [
-    'Integration consumer: assert side effect (БД, статус, outbox), offset commit, retry/DLQ — не только consume.',
-    'Streams: TopologyTestDriver — быстрый тест topology; Testcontainers — ser/de, consumer group, wiring.',
+    'Unit — handler; integration — Testcontainers/Embedded Kafka; Streams — TopologyTestDriver.',
+    'Integration: side effect (БД, статус, outbox), offset commit, retry, DLQ — не только consume.',
   ],
+  'int-6-02': [
+    'Kafka — distributed commit log, не классическая task queue.',
+    'topic/partition/offset/consumer group; ordering только в partition.',
+  ],
+  'int-6-03': [
+    'at-least-once + idempotent consumer; retry/backoff; DLQ; poison pill.',
+    'offset commit после успешной обработки; мониторинг lag/rebalance.',
+  ],
+  'int-6-04': [
+    '4 consumers / 3 partitions → один idle; 3 / 4 → один consumer на 2 partitions.',
+    'max parallelism = число partitions.',
+  ],
+  'int-6-05': [
+    'WHERE до GROUP BY; HAVING после; PAID в WHERE, count(*) > 10 в HAVING.',
+    'Пример orders — в codeExample категории sql.',
+  ],
+  'int-6-06': [
+    'Protobuf не единственный теоретически; .proto — production-default, codegen, schema evolution.',
+    'JSON transcoding — gateway, не замена контракта.',
+  ],
+  'int-6-07': [
+    'fixedRate vs fixedDelay vs cron; distributed: ShedLock/DB lock/leader election.',
+    'job idempotency; не дублировать на всех pod.',
+  ],
+  'int-6-08': [
+    'SKIP LOCKED + LIMIT + claim; JVM Lock не между pod.',
+    'stale claim timeout/requeue; идемпотентная обработка.',
+  ],
+  'int-6-09': [
+    'Инкапсуляция, абстракция, наследование (is-a), полиморфизм — через контракт.',
+    'Композиция has-a часто лучше глубокого наследования.',
+  ],
+  'int-6-10': [
+    'Наследование — устойчивый is-a (Payment → CardPayment), не reuse полей.',
+  ],
+  'int-6-11': [
+    'Canonical LSP (module-3): не Bird.fly() для Penguin/Struthio — интерфейс Flyable.',
+  ],
+  'int-6-13': [
+    'Composition: Order→OrderItem; aggregation: Team→Employee (слабее владение).',
+  ],
+  'int-6-14': [
+    'Collection — List/Set/Queue; Map отдельно, не extends Collection.',
+  ],
+  'int-6-15': [
+    'Поиск по значению: ArrayList и LinkedList O(n); LinkedList хуже по cache locality.',
+  ],
+  'int-6-16': [
+    'hashCode→bucket, equals→key; load factor, treeification; mutable key риск.',
+    'avg O(1); worst O(n) / O(log n) в tree bin.',
+  ],
+  'int-6-17': [
+    'java.util.Stack legacy; Deque/ArrayDeque; concurrent — отдельные структуры.',
+  ],
+  'int-6-18': [
+    'stack — frames; heap — объекты; metaspace — metadata классов; ссылка локально.',
+  ],
+  'int-6-19': [
+    'immutable; new String("abc") — новый объект; String Pool в heap (modern Java).',
+    'intern() без нужды раздувает pool/heap.',
+  ],
+  'int-6-20': [
+    'IntegerCache, Boolean; не тот же механизм, что String Pool.',
+  ],
+  'int-6-21': [
+    'Framework: IoC/DI/AOP; Boot: auto-config, starters, actuator.',
+    'constructor injection preferred.',
+  ],
+  'int-6-22': [
+    'Auto-configuration — Spring Boot, не core Framework.',
+  ],
+  'int-6-23': [
+    'BeanDefinition, singleton registry, scopes, BeanPostProcessor; Map — упрощение.',
+  ],
+  'int-6-24': [
+    'плюсы: поля клиента; минусы: N+1, cache, security, complexity; DataLoader.',
+  ],
+  'int-6-25': [
+    'persistence context, dirty checking, N+1, fetch join, LazyInitializationException.',
+    'диагностика: SQL count, statistics.',
+  ],
+  'int-6-26': [
+    'Criteria — динамические фильтры; иначе JPQL/QueryDSL/native SQL.',
+  ],
+  'int-6-27': [
+    'CGLIB vs JDK proxy; final blocks CGLIB; self-invocation; TransactionInterceptor logs.',
+  ],
+};
+
+const QUESTION_EXTRA_KEY_POINTS: Record<string, string[]> = {
   'int-6-03': ['Poison pill: изолировать в DLQ, не блокировать основную consumer group.'],
-  'int-6-12': [
-    'SRP: не смешивать валидацию, БД и email; OCP: новая стратегия вместо if-else в сервисе.',
-    'DIP: зависимость от Notifier/PaymentGateway, не от конкретного SDK.',
-  ],
   'int-6-27': ['final method не override CGLIB proxy — @Transactional может не примениться.'],
 };
 
@@ -990,14 +1080,6 @@ function getQuestionGlossary(questionId: string): LectureModule['topics'][number
       return [
         { term: 'LSP', meaning: 'Подтип должен быть заменяем супертипом без сюрпризов.' },
         { term: 'Flyable', meaning: 'Интерфейс способности вместо обязательного fly() у всех Bird.' },
-      ];
-    case 'int-6-12':
-      return [
-        { term: 'SRP', meaning: 'Single Responsibility: одна причина для изменения класса.' },
-        { term: 'OCP', meaning: 'Open/Closed: новый сценарий — новая реализация/стратегия.' },
-        { term: 'LSP', meaning: 'Подтип заменяем без сюрпризов; Penguin≠Flyable в Bird.fly().' },
-        { term: 'ISP', meaning: 'Узкие интерфейсы вместо fat interface с лишними методами.' },
-        { term: 'DIP', meaning: 'Зависимость от Notifier/PaymentGateway, не от SDK-клиента.' },
       ];
     case 'int-6-13':
       return [
@@ -1120,7 +1202,29 @@ function buildTopicQuestionPlan(
   ];
 }
 
-function buildTopic(question: QuestionDef): LectureModule['topics'][number] {
+function reuseCanonicalTopic(question: QuestionDef): Topic {
+  const reuse = CANONICAL_TOPIC_REUSE[question.id];
+  if (!reuse) {
+    throw new Error(`Missing CANONICAL_TOPIC_REUSE for ${question.id}`);
+  }
+  const source = module3.topics.find((item) => item.id === reuse.sourceTopicId);
+  if (!source) {
+    throw new Error(`Canonical topic not found in module-3: ${reuse.sourceTopicId}`);
+  }
+  return {
+    ...source,
+    id: question.id,
+  };
+}
+
+function resolveTopic(question: QuestionDef): Topic {
+  if (CANONICAL_TOPIC_REUSE[question.id]) {
+    return reuseCanonicalTopic(question);
+  }
+  return buildTopic(question);
+}
+
+function buildTopic(question: QuestionDef): Topic {
   const category = detectCategory(question.id);
   const categoryCode = CATEGORY_CODE_EXAMPLE[category];
   const explainTail = CATEGORY_EXPLAIN_TAIL[category];
@@ -1128,7 +1232,10 @@ function buildTopic(question: QuestionDef): LectureModule['topics'][number] {
   const practicalHint = override?.practicalHint ?? question.practicalHint ?? CATEGORY_PRACTICAL_HINT[category];
   const pitfall = override?.pitfall ?? question.pitfall ?? CATEGORY_PITFALL[category];
   const prevention = override?.prevention ?? question.prevention ?? CATEGORY_PREVENTION[category];
-  const extraKeyPoints = QUESTION_EXTRA_KEY_POINTS[question.id];
+  const extraKeyPoints = [
+    ...(QUESTION_CANONICAL_SYNC[question.id] ?? []),
+    ...(QUESTION_EXTRA_KEY_POINTS[question.id] ?? []),
+  ];
 
   return topic({
     id: question.id,
@@ -1186,5 +1293,5 @@ export const moduleInterview6: LectureModule = {
   isAvailable: true,
   summary:
     '27 тем по Kafka, Java Core, Spring, SQL, Hibernate, gRPC и scheduler: быстрый эталон ответа и rich-разбор для ведущего интервью.',
-  topics: QUESTIONS.map(buildTopic),
+  topics: QUESTIONS.map(resolveTopic),
 };

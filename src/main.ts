@@ -741,6 +741,7 @@ function renderTopicPage(topic: TopicContent): string {
     topic.id.startsWith('int-3-') ||
     topic.id.startsWith('int-4-') ||
     topic.id.startsWith('int-5-') ||
+    topic.id.startsWith('int-prod-') ||
     topic.id.startsWith('prac-') ||
     topic.id.startsWith('cvb-') ||
     topic.id.startsWith('prj-') ||
@@ -984,6 +985,7 @@ function render(): void {
             topic.id.startsWith('int-3-') ||
             topic.id.startsWith('int-4-') ||
             topic.id.startsWith('int-5-') ||
+            topic.id.startsWith('int-prod-') ||
             topic.id.startsWith('prac-') ||
             moduleData.id === 'cv-interview' ||
             moduleData.id === 'practice-interview'
