@@ -37,6 +37,7 @@
 | **Concurrent collections (lists) / HashMap Java 21** | HashMap: `int-6-16`, `int-4-02`; lists: **`module-interview-7.ts`** → `int-7-11`, `int-7-12` | Interview 7 HashMap must keep int-6-16 bullets in sync | synchronizedList vs CopyOnWrite vs Vector; HashMap treeify threshold 8/6; red-black **TreeNode** | «HashMap always O(1)»; Vector in new code |
 | **HikariCP / tx propagation REQUIRES_NEW vs NESTED** | `@Transactional` proxy: `int-6-27`; propagation depth: **`module-interview-7.ts`** → `int-7-18`, `int-7-20` | `module-interview-5.ts` propagation questions | Hikari leak/unclosed ResultSet; REQUIRES_NEW independent tx; NESTED savepoint; Kafka consumer + outbox ordering | NESTED without savepoint DB; commit offset before DB |
 | **Idempotency / 2PC / Saga / Circuit Breaker / SCA-SAST** | **`module-interview-7.ts`** → `int-7-19`–`int-7-23` | Idempotency touches Kafka int-6-03 | REST Idempotency-Key + UNIQUE; inbox/outbox; 2PC vs Saga; Resilience4j CB states; SCA transitive CVE (log4j) | 2PC everywhere; SAST-only without dependency scan |
+| **Java backend intern matrix (35 вопросов)** | **`module-interview-intern.ts`** → `int-intern-01`–`int-intern-35` | Compact live для Intern/Junior-; пересечения с canonical выше (Spring, Hibernate N+1, Kafka, PostgreSQL, patterns, testing) | 8 секций × 35 карточек; `interviewFocus`: минимум / хороший ответ / красный флаг; не слабее must-keep из строк таблицы для пересекающихся тем | Потеря вопроса из матрицы; `language: 'sql'` в codeExample (только `java`/`text`); VT «быстрее CPU»; Optional в entity fields |
 
 ---
 
@@ -59,6 +60,7 @@
 - **SOLID** — canonical в `module-3.ts` (`solid-principles`). **Interview 6** `int-6-12` — **полная копия** этой темы (`CANONICAL_TOPIC_REUSE`), id `int-6-12` только для навигации.
 - **Interview 6** — compact live для остальных тем; `QUESTION_CANONICAL_SYNC` — для тем **без** reuse, не вместо reuse для SOLID.
 - **Interview 7** (`module-interview-7.ts`) — 23 темы PostgreSQL/Kafka deep/JVM 21/distributed; пересечения с int-6 через `QUESTION_CANONICAL_SYNC` (Kafka, HashMap, `@Transactional`).
+- **Interview intern** (`module-interview-intern.ts`) — 35 тем Intern/Junior- matrix (Java Core, concurrency, Spring/Hibernate, SQL/PostgreSQL, distributed, microservices, patterns, testing); enrichment в `module-interview-intern-enrichment.ts`.
 - Частичная **синхронизация смысла** уже проведена между `module-1`, `module-5`, `interview-4/5/6`, `interview-stack`, `interview-ms` (HashMap, String Pool/heap, `@Transactional`, WHERE/HAVING, SOLID hints); карта фиксирует источники, чтобы дубли не разъезжались снова.
 - **Shared registry** (`src/content/shared/canonical-blocks.ts` или аналог) **не вводится** — проект остаётся на явных `topic()` в файлах модулей + эта документация.
 - **Следующий шаг (опционально)** — вынести reusable canonical blocks в `src/content/shared/`, если дубли начнут мешать сопровождению или появятся 3+ interview-модуля с одними и теми же 20+ темами.
@@ -71,6 +73,7 @@
 | --- | --- |
 | `module-1.ts` … `module-5.ts` | Учебные модули, максимальная глубина |
 | `module-interview-3.ts` … `module-interview-7.ts` | Interview-пакеты, compact + live |
+| `module-interview-intern.ts` | Intern/Junior- matrix, 35 live-карточек |
 | `module-interview-ms.ts`, `module-interview-stack.ts` | Тематические interview-пакеты |
 | `module-practice-interview.ts`, `module-cv-interview.ts` | Практика / CV, свои правила UI |
 | `.cursor/rules/lecturer-content-fill.mdc` | Стиль наполнения для агентов/авторов |
